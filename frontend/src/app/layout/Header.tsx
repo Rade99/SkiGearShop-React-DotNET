@@ -1,5 +1,7 @@
 import { ShoppingCart } from "@mui/icons-material";
 import { AppBar, Badge, Box, IconButton, List, ListItem, Switch, Toolbar, Typography } from "@mui/material";
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import Brightness2Icon from '@mui/icons-material/Brightness2';
 import { NavLink } from "react-router-dom";
 
 interface Props {
@@ -44,6 +46,9 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                         RE-STORE
                     </Typography>
                     <Switch checked={darkMode} onChange={handleThemeChange} />
+                    <IconButton color="inherit">
+                        {darkMode ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    </IconButton>
                 </Box>
 
 
