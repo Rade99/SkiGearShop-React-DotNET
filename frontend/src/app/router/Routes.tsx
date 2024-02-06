@@ -6,6 +6,7 @@ import { ContactPage } from "@mui/icons-material";
 import AboutPage from "../../features/about/AboutPage";
 import ProductDetails from "../../features/catalog/ProductDetails";
 import NotFound from "../api/errors/NotFound";
+import BasketPage from "../../features/basket/BasketPage";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
             {path: "about", element: <AboutPage />},
             {path: "contact", element: <ContactPage />},
             {path: "not-found", element: <NotFound />},
+            {path: "basket", element: <BasketPage />},
             {path: "*", element: <Navigate replace to="/not-found" />},
         ]
     }

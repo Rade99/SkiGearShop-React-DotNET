@@ -2,7 +2,7 @@ import { ShoppingCart } from "@mui/icons-material";
 import { AppBar, Badge, Box, IconButton, List, ListItem, Switch, Toolbar, Typography } from "@mui/material";
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import Brightness2Icon from '@mui/icons-material/Brightness2';
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 interface Props {
     darkMode: boolean;
@@ -67,7 +67,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                 </List>
 
                 <Box display="flex" alignItems="center">
-                    <IconButton size="large" edge="start" color="inherit" sx={{ margin: 2 }}>
+                    <IconButton component={Link} to="/basket" size="large" edge="start" color="inherit" sx={{ margin: 2 }}>
                         <Badge badgeContent="4" color="secondary">
                             <ShoppingCart />
                         </Badge>
