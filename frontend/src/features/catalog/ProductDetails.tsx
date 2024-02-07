@@ -1,26 +1,41 @@
-import { Grid, Typography, Divider, TableContainer, TableBody, TableCell, Table, TableRow } from "@mui/material";
+import { Grid, Typography, Divider, TableContainer, TableBody, TableCell, Table, TableRow, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { Product } from "../../app/models/product";
 import axios from "axios";
 import agent from "../../app/api/agent";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { currencyFormat } from "../../app/api/util/util";
+import { useStoreContext } from "../../app/api/context/StoreContext";
+import { LoadingButton } from "@mui/lab";
 
 export default function ProductDetails() {
+    const { basket } = useStoreContext();
     const { id } = useParams<{ id: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
+    const [quantity, setQuantity] = useState(0);
+    const item = basket?.items.find(i => i.productId === product?.id);
+
 
     useEffect(() => {
+        if (item) setQuantity(item.quantity);
         id && agent.Catalog.details(parseInt(id))
             .then(product => setProduct(product))
             .catch(error => console.log(error.response))
             .finally(() => setLoading(false))
-    }, [id])
+    }, [id, item])
 
     if (loading) return <LoadingComponent message="Loading product..." />
 
     if (!product) return <h3>Product not found</h3>
+
+    function handleInputChange(event : any)
+    {
+        if(event.target.value > 0){
+            setQuantity(parseInt(event.target.value));
+        }
+    }
 
     return (
         <Grid container spacing={6}>
@@ -30,7 +45,7 @@ export default function ProductDetails() {
             <Grid item xs={6}>
                 <Typography variant="h3">{product.name}</Typography>
                 <Divider sx={{ mb: 2 }}></Divider>
-                <Typography variant="h4" color="secondary">${(product.price / 100).toFixed(2)}</Typography>
+                <Typography variant="h4" color="secondary">{currencyFormat(product.price)}</Typography>
                 <TableContainer>
                     <Table>
                         <TableBody>
@@ -55,6 +70,30 @@ export default function ProductDetails() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <TextField
+                            onChange={handleInputChange}
+                            variant='outlined'
+                            type='number'
+                            label='Quantity in Cart'
+                            fullWidth
+                            value={quantity}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <LoadingButton
+                            sx={{ height: '55px' }}
+                            color='primary'
+                            size='large'
+                            variant='contained'
+                            fullWidth
+                        >
+                            {item ? 'Update Quantity' : 'Add to Cart'}
+                        </LoadingButton>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     )
