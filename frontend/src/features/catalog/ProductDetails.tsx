@@ -2,15 +2,16 @@ import { Grid, Typography, Divider, TableContainer, TableBody, TableCell, Table,
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { Product } from "../../app/models/product";
-import axios from "axios";
 import agent from "../../app/api/agent";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { currencyFormat } from "../../app/api/util/util";
-import { useStoreContext } from "../../app/api/context/StoreContext";
 import { LoadingButton } from "@mui/lab";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { setBasket, updateBasketItemAsync } from "../basket/basketSlice";
 
 export default function ProductDetails() {
-    const { basket } = useStoreContext();
+    const { basket, status } = useAppSelector(state => state.basket);
+    const dispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -30,11 +31,14 @@ export default function ProductDetails() {
 
     if (!product) return <h3>Product not found</h3>
 
-    function handleInputChange(event : any)
-    {
-        if(event.target.value > 0){
+    function handleInputChange(event: any) {
+        if (event.target.value > 0) {
             setQuantity(parseInt(event.target.value));
         }
+    }
+
+    function handleUpdateCart() {
+        dispatch(updateBasketItemAsync({productId: product?.id!, quantity: quantity}));
     }
 
     return (
@@ -79,11 +83,14 @@ export default function ProductDetails() {
                             type='number'
                             label='Quantity in Cart'
                             fullWidth
-                            value={quantity}
+                            value={quantity === 0 ? 1 : quantity}
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <LoadingButton
+                            disabled={item?.quantity === quantity}
+                            loading={status === ("pendingUpdateItem" + item?.productId)}
+                            onClick={handleUpdateCart}
                             sx={{ height: '55px' }}
                             color='primary'
                             size='large'

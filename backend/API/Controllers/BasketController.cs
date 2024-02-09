@@ -45,6 +45,24 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails { Title = "Problem with saving item to basket" });
         }
 
+        [HttpPut]
+        public async Task<ActionResult> ChangeItemQuantityInsideBasket(int productId, int quantity)
+        {
+            var basket = await RetriveBasket();
+            if (basket == null) return NotFound();
+
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null) return NotFound();
+
+            basket.ChangeItemQuantity(product.Id, quantity);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return CreatedAtAction(nameof(GetBasket), MapBasketToDto(basket));
+
+            return BadRequest(new ProblemDetails { Title = "Problem with saving item to basket" });
+        }
+
         [HttpDelete]
         public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
         {
