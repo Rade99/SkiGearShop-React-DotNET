@@ -1,20 +1,33 @@
 import axios, { AxiosResponse } from "axios"
+import { PaginatiedResponse } from "../models/pagination";
 
 axios.defaults.baseURL = "http://localhost:5000/api/"
 axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data
 
+axios.interceptors.response.use(async response => {
+    //await sleep();
+    const pagination = response.headers["pagination"];
+    if(pagination) {
+        response.data = new PaginatiedResponse(response.data, JSON.parse(pagination));
+        console.log(response);
+        return response
+    }
+    return response;
+})
+
 const requests = {
-    get: (url: string) => axios.get(url).then(responseBody),
+    get: (url: string, params?: URLSearchParams ) => axios.get(url, {params}).then(responseBody),
     post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
     put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
     delete: (url: string) => axios.delete(url).then(responseBody)
 }
 
 const Catalog = {
-    list: () => requests.get("products"),
-    details: (id: number) => requests.get(`products/${id}`)
+    list: (params: URLSearchParams) => requests.get("products", params),
+    details: (id: number) => requests.get(`products/${id}`),
+    fetchFilters: () => requests.get("products/filters")
 }
 
 const TestErrors = {
