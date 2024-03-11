@@ -49,7 +49,7 @@ namespace API.Controllers
 
             foreach (var item in basket.Items)
             {
-                var productItem = await _context.Products.FindAsync(item.Id);
+                var productItem = await _context.Products.FindAsync(item.ProductId);
 
                 var itemOrdered = new ProductItemOrdered
                 {
@@ -78,7 +78,8 @@ namespace API.Controllers
                 BuyerId = User.Identity.Name,
                 ShippingAddress = orderDto.ShippingAddress,
                 Subtotal = subtotal,
-                DeliveryFee = deliveryFee
+                DeliveryFee = deliveryFee,
+                PaymentIntentId = basket.PaymentIntentId
             };
 
             _context.Orders.Add(order);

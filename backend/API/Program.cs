@@ -1,5 +1,4 @@
 using System.Text;
-using System.Xml.Schema;
 using API.Data;
 using API.Entities;
 using API.Middleware;
@@ -71,6 +70,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<PaymentService>();
 
 var app = builder.Build();
 
